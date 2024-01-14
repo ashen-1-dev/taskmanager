@@ -2,19 +2,18 @@
 
 namespace App\Controller\Task;
 
+use App\Controller\APIController;
 use App\Domain\ValueObject\Task\Description;
 use App\Domain\ValueObject\Task\Title;
-use App\Service\Task\TaskService;
 use App\Service\Task\TaskServiceInterface;
 use Carbon\CarbonImmutable;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\UuidV4;
 
-class TaskController extends AbstractController
+class TaskController extends APIController
 {
     #[Route('/tasks', name: 'get_user_tasks', methods: Request::METHOD_GET)]
     public function getUserTasks(TaskServiceInterface $taskService): JsonResponse
@@ -33,7 +32,7 @@ class TaskController extends AbstractController
             $result[$key]['completedAt'] = $task->getCompletedAt();
         }
 
-        return new JsonResponse($result);
+        return $this->responseOK($result);
     }
 
     #[Route('/tasks', name: 'create_task', methods: Request::METHOD_POST)]
@@ -47,7 +46,7 @@ class TaskController extends AbstractController
         $description = new Description($payload->get('description'));
         $completedAt = !is_null($payload->has('completedAt'))
             ? CarbonImmutable::createFromFormat(
-                'Y-m-d H:i:s',
+                'c',
                 $payload->get('completedAt')
             )
             : null;
@@ -59,12 +58,12 @@ class TaskController extends AbstractController
             completedAt: $completedAt
         );
 
-        return new JsonResponse(
+        return $this->responseCreated(
             [
                 'id' => $task->getId()->toRfc4122(),
                 'title' => $task->getTitle()->getText(),
                 'description' => $task->getDescription()->getText()
-            ], Response::HTTP_CREATED
+            ]
         );
     }
 
@@ -89,13 +88,12 @@ class TaskController extends AbstractController
             completedAt: $completedAt
         );
 
-        return new JsonResponse(
+        return $this->responseOK(
             [
                 'id' => $task->getId()->toRfc4122(),
                 'title' => $task->getTitle()->getText(),
                 'description' => $task->getDescription()->getText()
-            ],
-            Response::HTTP_OK
+            ]
         );
     }
 
@@ -103,13 +101,13 @@ class TaskController extends AbstractController
     public function deleteTask(TaskServiceInterface $taskService, string $taskId): JsonResponse
     {
         $taskService->deleteTask(UuidV4::fromString($taskId));
-        return new JsonResponse();
+        return $this->responseOK();
     }
 
     #[Route('/tasks/{taskId}/complete', name: 'mark_task_completed', methods: Request::METHOD_POST)]
     public function markTaskAsCompleted(TaskServiceInterface $taskService, string $taskId): JsonResponse
     {
         $taskService->markTaskAsComplete(UuidV4::fromString($taskId));
-        return new JsonResponse();
+        return $this->responseOK();
     }
 }
