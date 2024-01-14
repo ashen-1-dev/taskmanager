@@ -1,5 +1,7 @@
 <?php
 
+use App\Service\Task\TaskService;
+use App\Service\Task\TaskServiceInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
 return function(ContainerConfigurator $container): void {
@@ -13,4 +15,6 @@ return function(ContainerConfigurator $container): void {
     // this creates a service per class whose id is the fully-qualified class name
     $services->load('App\\', '../src/')
         ->exclude('../src/{DependencyInjection,Entity,Kernel.php}');
+
+    $services->alias(TaskServiceInterface::class, TaskService::class);
 };

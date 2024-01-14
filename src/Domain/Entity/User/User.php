@@ -48,8 +48,11 @@ class User
         Description $description,
         CarbonInterface $createdAt,
         ?CarbonInterface $completedAt = null
-    ): void {
-        $this->tasks->add(Task::createTask($id, $title, $description, $this, $createdAt, $completedAt));
+    ): Task {
+        $task = Task::createTask($id, $title, $description, $this, $createdAt, $completedAt);
+        $this->tasks->add($task);
+
+        return $task;
     }
 
     //GETTERS

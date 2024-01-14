@@ -123,7 +123,7 @@ class Task
         return $this->createdAt;
     }
 
-    public function getCompletedAt(): CarbonInterface
+    public function getCompletedAt(): ?CarbonInterface
     {
         return $this->completedAt;
     }
