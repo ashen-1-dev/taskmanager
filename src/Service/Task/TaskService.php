@@ -6,6 +6,7 @@ use App\Domain\Entity\Task\Task;
 use App\Domain\Entity\User\User;
 use App\Domain\ValueObject\Task\Description;
 use App\Domain\ValueObject\Task\Title;
+use App\Exception\ValidationException;
 use App\Repository\Task\TaskRepository;
 use App\Repository\User\UserRepository;
 use Carbon\CarbonImmutable;
@@ -14,13 +15,15 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Uid\AbstractUid;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class TaskService implements TaskServiceInterface
 {
     public function __construct(
         private readonly TaskRepository $taskRepository,
         private readonly UserRepository $userRepository,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ValidatorInterface $validator
     ) {
     }
 
@@ -53,6 +56,8 @@ class TaskService implements TaskServiceInterface
             completedAt: $completedAt
         );
 
+        $this->validateTask($task);
+
         $this->entityManager->persist($task);
         $this->entityManager->flush();
 
@@ -77,6 +82,8 @@ class TaskService implements TaskServiceInterface
             description: $description,
             completedAt: $completedAt
         );
+
+        $this->validateTask($task);
 
         $this->entityManager->persist($task);
         $this->entityManager->flush();
@@ -112,5 +119,13 @@ class TaskService implements TaskServiceInterface
         $this->entityManager->flush();
 
         return true;
+    }
+
+    protected function validateTask(Task $task): void
+    {
+        $errors = $this->validator->validate($task);
+        if ($errors->count() > 0) {
+            throw ValidationException::withMessages($errors);
+        }
     }
 }

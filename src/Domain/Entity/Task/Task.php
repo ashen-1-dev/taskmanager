@@ -13,6 +13,8 @@ use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\AbstractUid;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 class Task
@@ -136,5 +138,11 @@ class Task
     public function getUser(): User
     {
         return $this->user;
+    }
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata): void
+    {
+        $metadata->addPropertyConstraint('title', new Assert\Valid());
+        $metadata->addPropertyConstraint('description', new Assert\Valid());
     }
 }
