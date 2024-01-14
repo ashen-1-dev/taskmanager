@@ -3,28 +3,47 @@
 namespace App\Domain\Entity\Task;
 
 use App\Domain\Entity\Task\Enum\TaskStatus;
-use App\Domain\ValueObject\ID;
+use App\Domain\Entity\User\User;
 use App\Domain\ValueObject\Task\Description;
 use App\Domain\ValueObject\Task\Title;
-use Carbon\Carbon;
-use Carbon\CarbonImmutable;
+use App\Repository\Task\TaskRepository;
 use Carbon\CarbonInterface;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
+use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Uid\AbstractUid;
 
+#[ORM\Entity(repositoryClass: TaskRepository::class)]
 class Task
 {
-    private ID $id;
+    #[ORM\Id]
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
+    private AbstractUid $id;
+    #[ORM\Embedded(class: Title::class, columnPrefix: false)]
     private Title $title;
+
+    #[ORM\Embedded(class: Description::class, columnPrefix: false)]
     private Description $description;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'tasks')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    private User $user;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private CarbonInterface $createdAt;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?CarbonInterface $completedAt;
 
     private function __construct(
-        ID $id,
+        AbstractUid $id,
         Title $title,
         Description $description,
-        Carbon $createdAt,
-        ?Carbon $completedAt = null
+        User $user,
+        CarbonInterface $createdAt,
+        ?CarbonInterface $completedAt = null
     ) {
         if (!is_null($completedAt) && $completedAt > $createdAt) {
             throw new InvalidArgumentException('Дата выполнения не должна превышать даты создания задачи');
@@ -33,21 +52,24 @@ class Task
         $this->id = $id;
         $this->title = $title;
         $this->description = $description;
+        $this->user = $user;
         $this->createdAt = $createdAt;
         $this->completedAt = $completedAt;
     }
 
     public static function createTask(
-        ID $id,
+        AbstractUid $id,
         Title $title,
         Description $description,
-        Carbon $createdAt,
-        ?Carbon $completedAt = null
+        User $user,
+        CarbonInterface $createdAt,
+        ?CarbonInterface $completedAt = null
     ): Task {
         return new Task(
             id: $id,
             title: $title,
             description: $description,
+            user: $user,
             createdAt: $createdAt,
             completedAt: $completedAt
         );
@@ -81,7 +103,7 @@ class Task
     }
 
     // GETTERS
-    public function getId(): ID
+    public function getId(): AbstractUid
     {
         return $this->id;
     }
@@ -109,5 +131,10 @@ class Task
     public function getStatus(): TaskStatus
     {
         return !is_null($this->completedAt) ? TaskStatus::Completed : TaskStatus::NotCompleted;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
     }
 }

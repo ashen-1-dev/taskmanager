@@ -2,8 +2,11 @@
 
 namespace App\Domain\ValueObject\Task;
 
+use Doctrine\DBAL\Types\Types;
 use InvalidArgumentException;
+use Doctrine\ORM\Mapping as ORM;
 
+#[ORM\Embeddable]
 class Description
 {
     private const MIN_TEXT_SIZE = 5;
@@ -11,6 +14,7 @@ class Description
     private const MAX_TEXT_SIZE = 1000;
 
     public function __construct(
+        #[ORM\Column(type: Types::TEXT)]
         private readonly string $description
     ) {
         $size = mb_strlen($this->description);
