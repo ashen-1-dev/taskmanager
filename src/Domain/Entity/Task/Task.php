@@ -6,6 +6,8 @@ use App\Domain\Entity\Task\Enum\TaskStatus;
 use App\Domain\Entity\User\User;
 use App\Domain\ValueObject\Task\Description;
 use App\Domain\ValueObject\Task\Title;
+use App\Exception\Task\CompleteDateBiggerThanCreateDate;
+use App\Exception\Task\WrongTaskCompleteDate;
 use App\Repository\Task\TaskRepository;
 use Carbon\CarbonInterface;
 use Doctrine\DBAL\Types\Types;
@@ -48,7 +50,7 @@ class Task
         ?CarbonInterface $completedAt = null
     ) {
         if (!is_null($completedAt) && $completedAt > $createdAt) {
-            throw new InvalidArgumentException('Дата выполнения не должна превышать даты создания задачи');
+            throw new CompleteDateBiggerThanCreateDate();
         }
 
         $this->id = $id;
@@ -80,7 +82,7 @@ class Task
     public function markAsCompleted(CarbonInterface $completedAt): true
     {
         if ($completedAt->isFuture()) {
-            throw new InvalidArgumentException('Неверная дата выполнения задачи');
+            throw new WrongTaskCompleteDate();
         }
 
         $this->completedAt = $completedAt;
@@ -94,7 +96,7 @@ class Task
         ?CarbonInterface $completedAt
     ): Task {
         if (!is_null($completedAt) && $completedAt > $this->createdAt) {
-            throw new InvalidArgumentException('Дата выполнения не должна превышать даты создания задачи');
+            throw new CompleteDateBiggerThanCreateDate();
         }
 
         $this->title = $title;

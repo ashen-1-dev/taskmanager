@@ -38,7 +38,7 @@ class TaskController extends APIController
     #[Route('/tasks', name: 'create_task', methods: Request::METHOD_POST)]
     public function createTask(TaskServiceInterface $taskService, Request $request): JsonResponse
     {
-        $userId = new UuidV4('2b06804f-2004-43e9-ba71-611be7d84b4e');
+        $userId = new UuidV4('2b06804f-2004-43e9-ba71-611be7d84b5e');
 
         $payload = $request->getPayload();
 

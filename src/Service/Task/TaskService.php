@@ -6,6 +6,8 @@ use App\Domain\Entity\Task\Task;
 use App\Domain\Entity\User\User;
 use App\Domain\ValueObject\Task\Description;
 use App\Domain\ValueObject\Task\Title;
+use App\Exception\Task\TaskNotFound;
+use App\Exception\User\UserNotFound;
 use App\Exception\ValidationException;
 use App\Repository\Task\TaskRepository;
 use App\Repository\User\UserRepository;
@@ -45,7 +47,7 @@ class TaskService implements TaskServiceInterface
         $user = $this->userRepository->findOneBy(['id' => $userId]);
 
         if (!$user) {
-            //TODO: throw an exception
+            throw new UserNotFound();
         }
 
         $task = $user->createTask(
@@ -74,7 +76,7 @@ class TaskService implements TaskServiceInterface
         $task = $this->taskRepository->findOneBy(['id' => $taskId]);
 
         if (!$task) {
-            //TODO: throw an exception
+            throw new TaskNotFound();
         }
 
         $task->editTask(
@@ -96,7 +98,7 @@ class TaskService implements TaskServiceInterface
         $task = $this->taskRepository->findOneBy(['id' => $taskId]);
 
         if (!$task) {
-            //TODO: throw an exception
+            throw new TaskNotFound();
         }
 
         $this->entityManager->remove($task);
@@ -111,7 +113,7 @@ class TaskService implements TaskServiceInterface
         $task = $this->taskRepository->findOneBy(['id' => $taskId]);
 
         if (!$task) {
-            //TODO: throw an exception
+            throw new TaskNotFound();
         }
 
         $task->markAsCompleted(CarbonImmutable::now());

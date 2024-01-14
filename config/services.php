@@ -11,9 +11,6 @@ return function(ContainerConfigurator $container): void {
         ->autowire()
         ->autoconfigure();
 
-    $container->parameters()->set('env(APP_DEBUG)', "0");
-    $container->parameters()->set('app.debug', '%env(APP_DEBUG)%');
-
     // makes classes in src/ available to be used as services
     // this creates a service per class whose id is the fully-qualified class name
     $services->load('App\\', '../src/')
