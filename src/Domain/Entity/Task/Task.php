@@ -2,9 +2,9 @@
 
 namespace App\Domain\Entity\Task;
 
-use App\Domain\Entity\Task\Enum\TaskStatus;
 use App\Domain\Entity\User\User;
 use App\Domain\ValueObject\Task\Description;
+use App\Domain\ValueObject\Task\TaskStatus;
 use App\Domain\ValueObject\Task\Title;
 use App\Exception\Task\CompleteDateBiggerThanCreateDate;
 use App\Exception\Task\WrongTaskCompleteDate;
@@ -12,11 +12,10 @@ use App\Repository\Task\TaskRepository;
 use Carbon\CarbonInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use InvalidArgumentException;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\AbstractUid;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 class Task

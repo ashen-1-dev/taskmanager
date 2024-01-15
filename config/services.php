@@ -1,6 +1,8 @@
 <?php
 
 use App\EventListener\ExceptionListener;
+use App\Service\Auth\AuthService;
+use App\Service\Auth\AuthServiceInterface;
 use App\Service\Task\TaskService;
 use App\Service\Task\TaskServiceInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -19,4 +21,5 @@ return function(ContainerConfigurator $container): void {
     $services->set(ExceptionListener::class)
         ->tag('kernel.event_listener', ['method' => 'onKernelException']);
     $services->alias(TaskServiceInterface::class, TaskService::class);
+    $services->alias(AuthServiceInterface::class, AuthService::class);
 };

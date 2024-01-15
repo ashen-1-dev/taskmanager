@@ -17,4 +17,9 @@ class Email
             throw new InvalidArgumentException('Неверный email');
         }
     }
+
+    public function toString(): string
+    {
+        return $this->email;
+    }
 }
