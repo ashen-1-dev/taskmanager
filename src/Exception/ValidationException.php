@@ -2,6 +2,7 @@
 
 namespace App\Exception;
 
+use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 
 class ValidationException extends \RuntimeException
@@ -17,6 +18,19 @@ class ValidationException extends \RuntimeException
     public static function withMessages(ConstraintViolationList $errors): static
     {
         return new static($errors);
+    }
+
+    public static function withRawMessages(array $errors): static
+    {
+        $list = new ConstraintViolationList();
+        foreach ($errors as $name => $messages) {
+            $messages = is_string($messages) ? [$messages] : $messages;
+            foreach ($messages as $message) {
+                $violation = new ConstraintViolation($message, null, [], null, $name, null);
+                $list->add($violation);
+            }
+        }
+        return self::withMessages($list);
     }
 
     public function getErrors(): ConstraintViolationList
