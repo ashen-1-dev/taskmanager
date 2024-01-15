@@ -1,3 +1,30 @@
+# Deployment
+
+1. Clone project
+
+```shell 
+git clone git@github.com:ashen-1-dev/taskmanager.git
+```
+
+2. Fill .env file (database connection, jwt, etc..)
+
+3. Install dependencies
+
+```shell 
+composer install
+```
+
+4. Create SSL keys for using JWT
+   token [(more info)](https://github.com/lexik/LexikJWTAuthenticationBundle/blob/2.x/Resources/doc/index.rst#generate-the-ssl-keys)
+
+5. Start server would you like to use (e.g nginx or Apache) <br>
+ ...or execute local symfony server: 
+```bash
+symfony server:start
+```
+(requires Symfony CLI)
+___
+
 # API
 
 ## Tasks
@@ -57,7 +84,7 @@ Request body
 
 Return [User](#user)
 
-### `POST /login` - Register a new user
+### `POST /login` - Login user
 
 Request body
 
