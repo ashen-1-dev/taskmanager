@@ -19,7 +19,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class TaskController extends APIController
 {
-    #[Route('/tasks', name: 'get_user_tasks', methods: Request::METHOD_GET)]
+    #[Route('/tasks', name: 'get_tasks', methods: Request::METHOD_GET)]
     public function getUserTasks(
         #[CurrentUser]
         User $user,
@@ -28,6 +28,14 @@ class TaskController extends APIController
         $tasks = $taskService->getUserTasks($user);
 
         return $this->responseOK($tasks->map(fn(Task $task) => $this->taskToArray($task)));
+    }
+
+    #[Route('/tasks/{task}', name: 'get_task', methods: Request::METHOD_GET)]
+    #[IsGranted(TaskVoter::VIEW, 'task')]
+    public function getTask(
+        Task $task
+    ): JsonResponse {
+        return $this->responseOK($this->taskToArray($task));
     }
 
     #[Route('/tasks', name: 'create_task', methods: Request::METHOD_POST)]
