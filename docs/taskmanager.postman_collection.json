@@ -1,0 +1,287 @@
+{
+	"info": {
+		"_postman_id": "fcad954c-c085-474c-8c15-6c06d62acaf2",
+		"name": "taskmanager",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13082150"
+	},
+	"item": [
+		{
+			"name": "Task",
+			"item": [
+				{
+					"name": "Get tasks",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/tasks",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get task",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/tasks/:taskid",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"tasks",
+								":taskid"
+							],
+							"variable": [
+								{
+									"key": "taskid",
+									"value": "5d462dcb-dc48-4172-a0af-da41a8764166"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create task",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Т\",\r\n    \"description\": \"Т\",\r\n    \"completedAt\": \"2024-01-14T12:41:41+00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/tasks",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit task",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Тест апд 2\",\r\n    \"description\": \"Тест описание апд 2\",\r\n    \"completedAt\": \"2023-10-12 20:10:12\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/tasks/:taskId",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"tasks",
+								":taskId"
+							],
+							"variable": [
+								{
+									"key": "taskId",
+									"value": "1b6fc271-8af2-41eb-8ba4-8394497e7c9c"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete task",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/tasks/:taskId",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"tasks",
+								":taskId"
+							],
+							"variable": [
+								{
+									"key": "taskId",
+									"value": "1b6fc271-8af2-41eb-8ba4-8394497e7c9c"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mark task as completed",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/tasks/:taskId/complete",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"tasks",
+								":taskId",
+								"complete"
+							],
+							"variable": [
+								{
+									"key": "taskId",
+									"value": "118dd800-dc8e-4dfe-a7df-9ca2c2d1850f"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"test@mail.ru\",\r\n    \"password\": \"qweqwe123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/login",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"end@mail.ru\",\r\n    \"password\": \"testtest\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/register",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{AUTH_TOKEN}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "AUTH_TOKEN",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MDUzMzM3NzEsImV4cCI6MTcwNTMzNzM3MSwicm9sZXMiOltdLCJ1c2VybmFtZSI6InRlc3RAbWFpbC5ydSJ9.SG6zO40Y6D7s_D3JvU6ZjH_ffT1R_bhMbORVz7jks47rT6Fa9Q5G9zoUwYemJrPpZ2hyMPyDtFwotySzgzp9RiGXaahnOrYCY0QCol56EXX9UDlD7DTKDjWv6pBm9Q-eQ4LVjfkGX5UCzFRbs8irTjV5L0uuogI_0h_wM9n3yufLjPkbypotm6o0I03NMIyDnk_fMVFFT0alk1l8T7WcxcS6cfi7cZRTyH9bV9SXaECIrixSRBqvb5k3ClsNbaAh0fMCO-Ki_8bkQuzcHm7RjFhz6q4ffQhAWyNOmE-FwNTmSgLGeKFqaVCdOJp1N_guyoZ7dW4CerymU1S5y29FBzDhNUMNkqI2mhY1J2NVgAkmL0fUqjlzARPzrLqVsIi0MhaX55-oogsVARM8Zpe2WYNoxC93Ai6ZWe-bQgojkzjvxPS8bDPuH3eb111wSKNab389M3DBx3QSpTFA7jC9taKAkq-M9VtpeVuQQ3_lc0bdgkufhvk1n_FD9qKXa2lWnE6NNtUWZErFtg7eVtcxvzAByRPPOJa1gf77oDLMVcWhsw514V0TgwFvLqNKeDr5OlVRHYwBV49kKJ24WMj3ElM1uz_s5dYfR90q_cgcDz57zM8-khVNE78n1xwLsYjm2PFR3kO8JetxSplWpp8hWxejfkEyXJgo9quglLnoeoA",
+			"type": "string"
+		}
+	]
+}
