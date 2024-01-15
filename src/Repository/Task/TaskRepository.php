@@ -3,12 +3,12 @@
 namespace App\Repository\Task;
 
 use App\Domain\Entity\Task\Task;
+use App\Domain\Entity\User\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Types\UuidType;
-use Symfony\Component\Uid\AbstractUid;
 
 
 class TaskRepository extends ServiceEntityRepository
@@ -19,14 +19,12 @@ class TaskRepository extends ServiceEntityRepository
     }
 
     /** @return Collection<string, Task> */
-    public function getUsersTask(AbstractUid $userId): Collection
+    public function getUsersTask(User $user): Collection
     {
-
         $query = $this->createQueryBuilder('task')
             ->where('task.user = :user')
-            ->setParameter('user', $userId, UuidType::NAME)
+            ->setParameter('user', $user->getId(), UuidType::NAME)
             ->getQuery();
-
 
         return new ArrayCollection($query->getResult());
     }

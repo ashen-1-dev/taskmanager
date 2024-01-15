@@ -6,7 +6,7 @@ use App\Domain\Entity\User\User;
 use App\Domain\ValueObject\Task\Description;
 use App\Domain\ValueObject\Task\TaskStatus;
 use App\Domain\ValueObject\Task\Title;
-use App\Exception\Task\CompleteDateBiggerThanCreateDate;
+use App\Exception\Task\CompleteDateLessThanCreateDate;
 use App\Exception\Task\WrongTaskCompleteDate;
 use App\Repository\Task\TaskRepository;
 use Carbon\CarbonInterface;
@@ -49,7 +49,7 @@ class Task
         ?CarbonInterface $completedAt = null
     ) {
         if (!is_null($completedAt) && $completedAt > $createdAt) {
-            throw new CompleteDateBiggerThanCreateDate();
+            throw new CompleteDateLessThanCreateDate();
         }
 
         $this->id = $id;
@@ -94,8 +94,8 @@ class Task
         Description $description,
         ?CarbonInterface $completedAt
     ): Task {
-        if (!is_null($completedAt) && $completedAt > $this->createdAt) {
-            throw new CompleteDateBiggerThanCreateDate();
+        if (!is_null($completedAt) && $completedAt < $this->createdAt) {
+            throw new CompleteDateLessThanCreateDate();
         }
 
         $this->title = $title;

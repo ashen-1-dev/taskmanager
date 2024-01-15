@@ -4,43 +4,39 @@ namespace App\Controller\Task;
 
 use App\Controller\APIController;
 use App\Domain\Entity\Task\Task;
+use App\Domain\Entity\User\User;
 use App\Domain\ValueObject\Task\Description;
 use App\Domain\ValueObject\Task\Title;
+use App\Security\Task\TaskVoter;
 use App\Service\Task\TaskServiceInterface;
 use Carbon\CarbonImmutable;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Uid\UuidV4;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class TaskController extends APIController
 {
     #[Route('/tasks', name: 'get_user_tasks', methods: Request::METHOD_GET)]
-    public function getUserTasks(TaskServiceInterface $taskService): JsonResponse
-    {
-        //temporary stub
-        $userId = new UuidV4('2b06804f-2004-43e9-ba71-611be7d84b4e');
-        $tasks = $taskService->getUserTasks($userId);
+    public function getUserTasks(
+        #[CurrentUser]
+        User $user,
+        TaskServiceInterface $taskService
+    ): JsonResponse {
+        $tasks = $taskService->getUserTasks($user);
 
-        $result = [];
-
-        foreach ($tasks as $key => $task) {
-            $result[$key]['id'] = $task->getId()->toRfc4122();
-            $result[$key]['title'] = $task->getTitle()->getText();
-            $result[$key]['description'] = $task->getDescription()->getText();
-            $result[$key]['status'] = $task->getStatus();
-            $result[$key]['completedAt'] = $task->getCompletedAt();
-        }
-
-        return $this->responseOK($result);
+        return $this->responseOK($tasks->map(fn(Task $task) => $this->taskToArray($task)));
     }
 
     #[Route('/tasks', name: 'create_task', methods: Request::METHOD_POST)]
-    public function createTask(TaskServiceInterface $taskService, Request $request): JsonResponse
-    {
-        $userId = new UuidV4('2b06804f-2004-43e9-ba71-611be7d84b5e');
-
+    public function createTask(
+        #[CurrentUser]
+        User $user,
+        TaskServiceInterface $taskService,
+        Request $request
+    ): JsonResponse {
         $payload = $request->getPayload();
 
         $title = new Title($payload->get('title'));
@@ -53,22 +49,17 @@ class TaskController extends APIController
             : null;
 
         $task = $taskService->createTask(
-            userId: $userId,
+            user: $user,
             title: $title,
             description: $description,
             completedAt: $completedAt
         );
 
-        return $this->responseCreated(
-            [
-                'id' => $task->getId()->toRfc4122(),
-                'title' => $task->getTitle()->getText(),
-                'description' => $task->getDescription()->getText()
-            ]
-        );
+        return $this->responseCreated($this->taskToArray($task));
     }
 
     #[Route('/tasks/{task}', name: 'edit_task', methods: Request::METHOD_PUT)]
+    #[IsGranted(TaskVoter::EDIT, 'task')]
     public function editTask(
         TaskServiceInterface $taskService,
         Request $request,
@@ -93,34 +84,40 @@ class TaskController extends APIController
             completedAt: $completedAt
         );
 
-        return $this->responseOK(
-            [
-                'id' => $task->getId()->toRfc4122(),
-                'title' => $task->getTitle()->getText(),
-                'description' => $task->getDescription()->getText()
-            ]
-        );
+        return $this->responseOK($this->taskToArray($task));
     }
 
     #[Route('/tasks/{task}', name: 'delete_task', methods: Request::METHOD_DELETE)]
+    #[IsGranted(TaskVoter::DELETE, 'task')]
     public function deleteTask(
         TaskServiceInterface $taskService,
         #[MapEntity]
         Task $task
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $taskService->deleteTask($task);
         return $this->responseOK();
     }
 
     #[Route('/tasks/{task}/complete', name: 'mark_task_completed', methods: Request::METHOD_POST)]
+    #[IsGranted(TaskVoter::EDIT, 'task')]
     public function markTaskAsCompleted(
         TaskServiceInterface $taskService,
         #[MapEntity]
         Task $task
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $taskService->markTaskAsComplete($task);
         return $this->responseOK();
+    }
+
+    private function taskToArray(Task $task): array
+    {
+        return [
+            'id' => $task->getId()->toRfc4122(),
+            'title' => $task->getTitle()->getText(),
+            'description' => $task->getDescription()->getText(),
+            'status' => $task->getStatus()->value,
+            'completedAt' => $task->getCompletedAt(),
+            'createdAT' => $task->getCreatedAt()
+        ];
     }
 }
