@@ -125,7 +125,7 @@ class TaskController extends APIController
             'description' => $task->getDescription()->getText(),
             'status' => $task->getStatus()->value,
             'completedAt' => $task->getCompletedAt(),
-            'createdAT' => $task->getCreatedAt()
+            'createdAt' => $task->getCreatedAt()
         ];
     }
 }
