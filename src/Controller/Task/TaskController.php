@@ -3,14 +3,15 @@
 namespace App\Controller\Task;
 
 use App\Controller\APIController;
+use App\Domain\Entity\Task\Task;
 use App\Domain\ValueObject\Task\Description;
 use App\Domain\ValueObject\Task\Title;
 use App\Service\Task\TaskServiceInterface;
 use Carbon\CarbonImmutable;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\UuidV4;
 
 class TaskController extends APIController
@@ -67,9 +68,13 @@ class TaskController extends APIController
         );
     }
 
-    #[Route('/tasks/{taskId}', name: 'edit_task', methods: Request::METHOD_PUT)]
-    public function editTask(TaskServiceInterface $taskService, Request $request, string $taskId): JsonResponse
-    {
+    #[Route('/tasks/{task}', name: 'edit_task', methods: Request::METHOD_PUT)]
+    public function editTask(
+        TaskServiceInterface $taskService,
+        Request $request,
+        #[MapEntity()]
+        Task $task
+    ): JsonResponse {
         $payload = $request->getPayload();
 
         $title = new Title($payload->get('title'));
@@ -82,7 +87,7 @@ class TaskController extends APIController
             : null;
 
         $task = $taskService->editTask(
-            UuidV4::fromString($taskId),
+            $task,
             title: $title,
             description: $description,
             completedAt: $completedAt
@@ -97,17 +102,25 @@ class TaskController extends APIController
         );
     }
 
-    #[Route('/tasks/{taskId}', name: 'delete_task', methods: Request::METHOD_DELETE)]
-    public function deleteTask(TaskServiceInterface $taskService, string $taskId): JsonResponse
+    #[Route('/tasks/{task}', name: 'delete_task', methods: Request::METHOD_DELETE)]
+    public function deleteTask(
+        TaskServiceInterface $taskService,
+        #[MapEntity]
+        Task $task
+    ): JsonResponse
     {
-        $taskService->deleteTask(UuidV4::fromString($taskId));
+        $taskService->deleteTask($task);
         return $this->responseOK();
     }
 
-    #[Route('/tasks/{taskId}/complete', name: 'mark_task_completed', methods: Request::METHOD_POST)]
-    public function markTaskAsCompleted(TaskServiceInterface $taskService, string $taskId): JsonResponse
+    #[Route('/tasks/{task}/complete', name: 'mark_task_completed', methods: Request::METHOD_POST)]
+    public function markTaskAsCompleted(
+        TaskServiceInterface $taskService,
+        #[MapEntity]
+        Task $task
+    ): JsonResponse
     {
-        $taskService->markTaskAsComplete(UuidV4::fromString($taskId));
+        $taskService->markTaskAsComplete($task);
         return $this->responseOK();
     }
 }

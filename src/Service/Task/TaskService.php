@@ -6,7 +6,6 @@ use App\Domain\Entity\Task\Task;
 use App\Domain\Entity\User\User;
 use App\Domain\ValueObject\Task\Description;
 use App\Domain\ValueObject\Task\Title;
-use App\Exception\Task\TaskNotFound;
 use App\Exception\User\UserNotFound;
 use App\Exception\ValidationException;
 use App\Repository\Task\TaskRepository;
@@ -67,18 +66,11 @@ class TaskService implements TaskServiceInterface
     }
 
     public function editTask(
-        AbstractUid $taskId,
+        Task $task,
         Title $title,
         Description $description,
         ?CarbonInterface $completedAt = null
     ): Task {
-        /** @var Task $task */
-        $task = $this->taskRepository->findOneBy(['id' => $taskId]);
-
-        if (!$task) {
-            throw new TaskNotFound();
-        }
-
         $task->editTask(
             title: $title,
             description: $description,
@@ -93,29 +85,16 @@ class TaskService implements TaskServiceInterface
         return $task;
     }
 
-    public function deleteTask(AbstractUid $taskId): true
+    public function deleteTask(Task $task): true
     {
-        $task = $this->taskRepository->findOneBy(['id' => $taskId]);
-
-        if (!$task) {
-            throw new TaskNotFound();
-        }
-
         $this->entityManager->remove($task);
         $this->entityManager->flush();
 
         return true;
     }
 
-    public function markTaskAsComplete(AbstractUid $taskId): true
+    public function markTaskAsComplete(Task $task): true
     {
-        /** @var Task $task */
-        $task = $this->taskRepository->findOneBy(['id' => $taskId]);
-
-        if (!$task) {
-            throw new TaskNotFound();
-        }
-
         $task->markAsCompleted(CarbonImmutable::now());
         $this->entityManager->persist($task);
         $this->entityManager->flush();

@@ -22,13 +22,13 @@ interface TaskServiceInterface
     ): Task;
 
     public function editTask(
-        AbstractUid $taskId,
+        Task $task,
         Title $title,
         Description $description,
         ?CarbonInterface $completedAt = null
     ): Task;
 
-    public function deleteTask(AbstractUid $taskId): true;
+    public function deleteTask(Task $task): true;
 
-    public function markTaskAsComplete(AbstractUid $taskId): true;
+    public function markTaskAsComplete(Task $task): true;
 }
