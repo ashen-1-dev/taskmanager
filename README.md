@@ -94,6 +94,9 @@ Request body
 | password | string | required, min: 6, max: 100 |
 
 Return [Token](#token)
+
+For authorized requests you should add this token to ```Authorization``` header <br>
+example: ``Authorization: Bearer YOUR_JWT_TOKEN_HERE``
 ___
 
 ## Types
